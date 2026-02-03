@@ -1,0 +1,87 @@
+services:
+  # We use the Timescale image because it packages pgai/pgvector nicely
+  db:
+    image: timescale/timescaledb-ha:pg16
+    container_name: dataquality
+    environment:
+      POSTGRES_DB: realtime_sentiments_analysis
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/home/postgres/pgdata/data
+    networks:
+      - realtime-sentiments-analysis-net
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80" # Map host port 8080 to container port 80
+    networks:
+      - realtime-sentiments-analysis-net
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  broker:
+    image: apache/kafka:latest
+    container_name: broker
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+    ports:
+      - "9092:9092"
+    networks:
+      - realtime-sentiments-analysis-net
+    # restart: unless-stopped
+
+  spark-master:
+    image: apache/spark:latest
+    container_name: spark-master
+    hostname: spark-master
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    networks:
+      - realtime-sentiments-analysis-net
+    # restart: unless-stopped
+
+  spark-worker:
+    image: apache/spark:latest
+    container_name: spark-worker
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"
+    networks:
+      - realtime-sentiments-analysis-net
+    # restart: unless-stopped
+
+networks:
+  realtime-sentiments-analysis-net:
+    driver: bridge
+
+volumes:
+  pg_data:

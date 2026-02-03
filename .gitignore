@@ -20,6 +20,7 @@ target/
 *.ipr
 
 .env
+dataset.csv
 
 ### NetBeans ###
 /nbproject/private/

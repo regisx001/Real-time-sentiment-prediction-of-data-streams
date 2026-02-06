@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sentiments.core.domain.dto.TweetEvent;
 import com.sentiments.core.services.TweetProducer;
 
 @RestController
@@ -19,7 +20,7 @@ public class KafkaController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> send(@RequestBody String message) {
+    public ResponseEntity<String> send(@RequestBody TweetEvent message) {
         producer.sendTweet(message);
         return ResponseEntity.ok("Message sent to Kafka");
     }

@@ -2,13 +2,13 @@ services:
   # We use the Timescale image because it packages pgai/pgvector nicely
   db:
     image: timescale/timescaledb-ha:pg16
-    container_name: dataquality
+    container_name: sentiments
     environment:
       POSTGRES_DB: realtime_sentiments_analysis
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: adminpassword
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pg_data:/home/postgres/pgdata/data
     networks:
@@ -53,7 +53,7 @@ services:
       - realtime-sentiments-analysis-net
 
   spark-master:
-    image: apache/spark:latest
+    image: apache/spark:3.5.1
     container_name: spark-master
     hostname: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
@@ -68,7 +68,7 @@ services:
     # restart: unless-stopped
 
   spark-worker:
-    image: apache/spark:latest
+    image: apache/spark:3.5.1
     container_name: spark-worker
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
     environment:

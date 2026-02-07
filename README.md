@@ -62,6 +62,22 @@ Run the Spring Boot application:
 
 The server will start on port `8090`.
 
+### 4. Start Spark Streaming Job
+
+To start processing tweets from Kafka, deploy the Spark Streaming job using the provided helper script:
+
+1.  Copy the application to the container (if not already done):
+    ```bash
+    docker cp spark/streaming/app.py spark-master:/tmp/
+    ```
+
+2.  Run the streaming job:
+    ```bash
+    chmod +x scripts/run-streaming.sh
+    ./scripts/run-streaming.sh
+    ```
+    Use `--detached` to run in the background.
+
 ## API Usage
 
 ### Send a Tweet (Kafka Producer)

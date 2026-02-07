@@ -31,6 +31,20 @@ docker cp app.py spark-master:/tmp/
 
 ### 2. Submit the Spark Job
 
+**Option A: Using the Helper Script (Recommended)**
+
+A helper script is available to simplify running the job. It handles the `spark-submit` arguments for you.
+
+```bash
+# From the project root
+./scripts/run-streaming.sh
+```
+
+Flags:
+- `-d` or `--detached`: Run in detached mode (background).
+
+**Option B: Manual Submission**
+
 Execute the job using `spark-submit` inside the container. This command handles downloading the necessary dependencies (Spark-Kafka integration and PostgreSQL driver) via Maven coordinates.
 
 ```bash

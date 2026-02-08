@@ -66,6 +66,8 @@ services:
     networks:
       - realtime-sentiments-analysis-net
     # restart: unless-stopped
+    volumes:
+    - ../data:/opt/data
 
   spark-worker:
     image: apache/spark:3.5.1
@@ -80,6 +82,8 @@ services:
     networks:
       - realtime-sentiments-analysis-net
     # restart: unless-stopped
+    volumes:
+    - ../data:/opt/data
 
 networks:
   realtime-sentiments-analysis-net:

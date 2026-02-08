@@ -21,6 +21,7 @@ target/
 
 .env
 dataset.csv
+cleaned.csv
 
 ### NetBeans ###
 /nbproject/private/
@@ -37,3 +38,4 @@ build/
 
 
 venv
+.venv

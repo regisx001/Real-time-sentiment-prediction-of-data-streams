@@ -62,21 +62,36 @@ Run the Spring Boot application:
 
 The server will start on port `8090`.
 
-### 4. Start Spark Streaming Job
+### 4. ML Model Training
+
+#### Offline Training (Notebooks)
+Explore the data and train a prototype model using Scikit-learn.
+- `notebooks/explore.ipynb`
+- `notebooks/02-Model-training.ipynb`
+
+#### Distributed Spark Training
+Train the model on the full dataset using the distributed Spark cluster.
+
+```bash
+chmod +x scripts/run-spark-training.sh
+./scripts/run-spark-training.sh
+```
+
+This script automates:
+1. Installing dependencies (`numpy`) on Spark nodes.
+2. Copying the dataset and script to the container's writable work directory (`/opt/spark/work-dir`).
+3. Submitting the job to the Spark Master.
+4. Retrieving the trained model to `ml/spark_sentiment_model`.
+
+### 5. Start Spark Streaming Job
 
 To start processing tweets from Kafka, deploy the Spark Streaming job using the provided helper script:
 
-1.  Copy the application to the container (if not already done):
-    ```bash
-    docker cp spark/streaming/app.py spark-master:/tmp/
-    ```
-
-2.  Run the streaming job:
-    ```bash
-    chmod +x scripts/run-streaming.sh
-    ./scripts/run-streaming.sh
-    ```
-    Use `--detached` to run in the background.
+```bash
+chmod +x scripts/run-spark-streaming.sh
+./scripts/run-spark-streaming.sh
+```
+Use `--detached` to run in the background.
 
 ## API Usage
 

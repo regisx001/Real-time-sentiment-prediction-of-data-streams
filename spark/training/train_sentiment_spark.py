@@ -25,16 +25,16 @@ def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(base_dir, "../../"))
 
-    # Check if data exists in /opt/ (Container environment)
-    if os.path.exists("/opt/data/cleaned.csv"):
-        data_path = "file:///opt/data/cleaned.csv"
+    # Check if data exists in /opt/spark/work-dir (Writable container environment)
+    work_dir = "/opt/spark/work-dir"
+    if os.path.exists(work_dir):
+        data_path = f"file://{work_dir}/cleaned.csv"
+        model_output_path = f"{work_dir}/spark_sentiment_model"
     else:
         # Fallback to local development path
-        data_path = os.path.join(project_root, "opt/data/cleaned.csv")
-
-    model_output_path = os.path.join(project_root, "ml/spark_sentiment_model")
-    if os.path.exists("/opt/"):
-        model_output_path = "/opt/spark/work-dir/spark_sentiment_model"
+        data_path = os.path.join(project_root, "data/cleaned.csv")
+        model_output_path = os.path.join(
+            project_root, "ml/spark_sentiment_model")
 
     print(f"Loading data from: {data_path}")
 

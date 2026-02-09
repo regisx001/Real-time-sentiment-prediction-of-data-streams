@@ -27,14 +27,14 @@ sudo docker exec -it spark-worker pip install numpy
 ### 2. Copy Dataset and Script
 Since we are running in a containerized environment, we need to move the data and the script into the container.
 
-**Note:** In a distributed setup using `file:///` paths, the data file must exist at the same path on **all nodes** (Master and Workers).
+**Note:** In a distributed setup using `file:///` paths, the data file must exist at the same path on **all nodes** (Master and Workers). Use `/opt/spark/work-dir/` which is writable.
 
 ```bash
-# Copy dataset to Spark Master
-sudo docker cp data/cleaned.csv spark-master:/opt/
+# Copy dataset to Spark Master (work-dir is writable)
+sudo docker cp data/cleaned.csv spark-master:/opt/spark/work-dir/
 
 # Copy dataset to Spark Worker (Crucial for distributed reading)
-sudo docker cp data/cleaned.csv spark-worker:/opt/
+sudo docker cp data/cleaned.csv spark-worker:/opt/spark/work-dir/
 
 # Copy the training script to Spark Master
 sudo docker cp spark/training/train_sentiment_spark.py spark-master:/tmp/
@@ -52,16 +52,17 @@ sudo docker exec -it spark-master /opt/spark/bin/spark-submit \
 
 ## Output
 - The script will print evaluation metrics (Accuracy, F1 Score) to the console.
-- The trained model will be saved inside the container at `/opt/spark_sentiment_model`.
+- The trained model will be saved inside the container at `/opt/spark/work-dir/spark_sentiment_model`.
 
 ### Retrieving the Model
 To use this model in your application, copy it back to your host machine:
 
 ```bash
 # Copy the model folder from the container to your local 'ml/' directory
-sudo docker cp spark-master:/opt/spark_sentiment_model ./ml/
+sudo docker cp spark-master:/opt/spark/work-dir/spark_sentiment_model ./ml/
 ```
 
 ## Troubleshooting
 - **ModuleNotFoundError: No module named 'numpy'**: Ensure you ran the `pip install numpy` command in step 1.
-- **AnalysisException: Path does not exist**: Ensure `cleaned.csv` is copied to **BOTH** `spark-master` and `spark-worker` at `/opt/`.
+- **AnalysisException: Path does not exist**: Ensure `cleaned.csv` is copied to **BOTH** `spark-master` and `spark-worker` at `/opt/spark/work-dir/`.
+- **Permission denied**: Use `/opt/spark/work-dir/` which is writable, not `/opt/` which is read-only.

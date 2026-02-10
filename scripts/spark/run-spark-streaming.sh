@@ -19,7 +19,8 @@ done
 
 # -------- Config --------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+# Go up two levels: scripts/spark -> scripts -> project_root
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 STREAMING_SCRIPT="$PROJECT_ROOT/spark/streaming/app.py"
 
 SPARK_MASTER="spark://spark-master:7077"

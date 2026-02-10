@@ -6,7 +6,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+# Go up two levels: scripts/spark -> scripts -> project_root
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 DATA_FILE="$PROJECT_ROOT/data/cleaned.csv"
 SCRIPT_FILE="$PROJECT_ROOT/spark/training/train_sentiment_spark.py"
 

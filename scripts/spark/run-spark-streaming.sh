@@ -21,10 +21,10 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Go up two levels: scripts/spark -> scripts -> project_root
 PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
-STREAMING_SCRIPT="$PROJECT_ROOT/spark/streaming/app.py"
+STREAMING_SCRIPT="$PROJECT_ROOT/spark/streaming/run_streaming_spark.py"
 
 SPARK_MASTER="spark://spark-master:7077"
-APP_PATH="/opt/spark/work-dir/app.py"
+APP_PATH="/opt/spark/work-dir/run_streaming_spark.py"
 
 SPARK_VERSION="3.5.1"
 SCALA_VERSION="2.12"

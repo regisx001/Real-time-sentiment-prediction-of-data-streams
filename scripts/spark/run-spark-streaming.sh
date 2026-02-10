@@ -47,11 +47,11 @@ fi
 echo "✓ Spark containers are running"
 
 # -------- Install numpy --------
-echo ""
-echo "Installing numpy on Spark Master and Worker..."
-sudo docker exec spark-master pip install numpy --quiet 2>/dev/null || true
-sudo docker exec spark-worker pip install numpy --quiet 2>/dev/null || true
-echo "✓ numpy installed"
+# echo ""
+# echo "Installing numpy on Spark Master and Worker..."
+# sudo docker exec spark-master pip install numpy --quiet 2>/dev/null || true
+# sudo docker exec spark-worker pip install numpy --quiet 2>/dev/null || true
+# echo "✓ numpy installed"
 
 # -------- Copy streaming script --------
 echo ""

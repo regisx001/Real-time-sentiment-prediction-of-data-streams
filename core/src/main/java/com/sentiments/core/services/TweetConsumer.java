@@ -8,7 +8,7 @@ import com.sentiments.core.domain.dto.TweetEvent;
 @Service
 public class TweetConsumer {
 
-    @KafkaListener(topics = "tweets.raw", groupId = "debug-consumer")
+    @KafkaListener(topics = "tweets", groupId = "debug-consumer")
     public void consume(TweetEvent tweet) {
         System.out.println("Consumed tweet: " + tweet);
     }

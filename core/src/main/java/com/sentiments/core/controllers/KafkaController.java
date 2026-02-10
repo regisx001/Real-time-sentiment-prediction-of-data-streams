@@ -13,15 +13,15 @@ import com.sentiments.core.services.TweetProducer;
 @RequestMapping("/api/kafka")
 public class KafkaController {
 
-    private final TweetProducer producer;
+    private final TweetProducer tweetProducer;
 
-    public KafkaController(TweetProducer producer) {
-        this.producer = producer;
+    public KafkaController(TweetProducer tweetProducer) {
+        this.tweetProducer = tweetProducer;
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> send(@RequestBody TweetEvent message) {
-        producer.sendTweet(message);
+    public ResponseEntity<String> sendTweet(@RequestBody TweetEvent tweet) {
+        tweetProducer.sendTweet(tweet);
         return ResponseEntity.ok("Message sent to Kafka");
     }
 }

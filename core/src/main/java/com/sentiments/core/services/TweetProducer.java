@@ -9,12 +9,14 @@ import com.sentiments.core.domain.dto.TweetEvent;
 public class TweetProducer {
 
     private final KafkaTemplate<String, TweetEvent> kafkaTemplate;
+    private static final String TOPIC = "tweets";
 
     public TweetProducer(KafkaTemplate<String, TweetEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
     public void sendTweet(TweetEvent tweet) {
-        kafkaTemplate.send("tweets.raw", tweet);
+        System.out.println("Sending tweet to Kafka: " + tweet);
+        kafkaTemplate.send(TOPIC, tweet.tweetId(), tweet);
     }
 }

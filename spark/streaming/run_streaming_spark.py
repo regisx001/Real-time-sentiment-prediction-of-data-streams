@@ -1,3 +1,4 @@
+from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, to_json, struct, udf
 from pyspark.sql.types import StructType, StructField, StringType, LongType, DoubleType
@@ -7,12 +8,20 @@ import random
 spark = (
     SparkSession.builder
     .appName("Kafka-PySpark-Streaming-MockSentiment")
+    .master("local[*]")
     .config("spark.shuffle.service.enabled", "false")
     .config("spark.dynamicAllocation.enabled", "false")
     .getOrCreate()
 )
 
 spark.sparkContext.setLogLevel("WARN")
+
+
+model_path = "/opt/spark/work-dir/spark_sentiment_model"
+model = PipelineModel.load(model_path)
+
+print("✓ Model loaded successfully")
+
 
 print("=" * 60)
 print("Spark Streaming with RANDOM Sentiment (Mock)")

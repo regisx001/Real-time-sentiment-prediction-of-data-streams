@@ -67,10 +67,10 @@ echo "================================================================"
 echo ""
 
 # Step 5: Copy model back to host
-echo "Step 5: Copying trained model back to host..."
-mkdir -p "$PROJECT_ROOT/ml"
-sudo docker cp spark-master:/opt/spark/work-dir/spark_sentiment_model "$PROJECT_ROOT/ml/" 2>/dev/null || true
-echo "✓ Model saved to $PROJECT_ROOT/ml/spark_sentiment_model"
-echo ""
+# echo "Step 5: Copying trained model back to host..."
+# mkdir -p "$PROJECT_ROOT/ml"
+# sudo docker cp spark-master:/opt/spark/work-dir/spark_sentiment_model "$PROJECT_ROOT/ml/" 2>/dev/null || true
+# echo "✓ Model saved to $PROJECT_ROOT/ml/spark_sentiment_model"
+# echo ""
 
 echo "=== Training Complete ==="

@@ -15,6 +15,7 @@ import os
 def main():
     # 1. SparkSession (Driver Entry Point)
     spark = SparkSession.builder \
+        .master("local[*]") \
         .appName("SentimentTrainingSparkML") \
         .getOrCreate()
 
@@ -127,8 +128,8 @@ def main():
     print(f"Test F1 Score: {f1_score:.4f}")
 
     # 9. Save the Spark ML Model
-    print(f"Saving model to {model_output_path}...")
-    model.write().overwrite().save(model_output_path)
+    print(f"Saving model to file:///opt/spark/work-dir/spark_sentiment_model ...")
+    model.write().overwrite().save("file:///opt/spark/work-dir/spark_sentiment_model")
     print("Model saved successfully.")
 
     # 10. Stop Spark Cleanly

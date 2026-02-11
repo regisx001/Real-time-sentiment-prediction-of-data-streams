@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 
 import com.sentiments.core.domain.dto.TweetEvent;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class TweetProducer {
 
@@ -16,7 +19,7 @@ public class TweetProducer {
     }
 
     public void sendTweet(TweetEvent tweet) {
-        System.out.println("Sending tweet to Kafka: " + tweet);
+        log.info("Sending tweet to Kafka: " + tweet);
         kafkaTemplate.send(TOPIC, tweet.tweetId(), tweet);
     }
 }

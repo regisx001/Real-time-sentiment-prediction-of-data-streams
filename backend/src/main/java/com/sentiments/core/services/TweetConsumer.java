@@ -10,6 +10,9 @@ import com.sentiments.core.domain.dto.ProcessedTweetEvent;
 import com.sentiments.core.domain.entities.Tweet;
 import com.sentiments.core.repository.TweetRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class TweetConsumer {
 
@@ -22,9 +25,9 @@ public class TweetConsumer {
     @KafkaListener(topics = "processed-tweets", groupId = "core-consumer")
     @Transactional
     public void consume(ProcessedTweetEvent event) {
-        System.out.println("Consumed processed tweet: " + event);
+        log.info("Consumed processed tweet: " + event);
         try {
-            Long id = Long.parseLong(event.tweetId());
+            Long id = Long.valueOf(event.tweetId());
             Optional<Tweet> tweetOpt = tweetRepository.findById(id);
             if (tweetOpt.isPresent()) {
                 Tweet tweet = tweetOpt.get();
@@ -32,10 +35,11 @@ public class TweetConsumer {
                 tweet.setScore(event.score());
                 tweetRepository.save(tweet);
             } else {
-                System.err.println("Tweet not found with ID: " + id);
+                log.error("Tweet not found with ID: " + id);
             }
         } catch (NumberFormatException e) {
-            System.err.println("Invalid tweet ID format: " + event.tweetId());
+            log.error("Invalid tweet ID format: " + event.tweetId());
+
         }
     }
 
@@ -43,15 +47,8 @@ public class TweetConsumer {
         if (rawSentiment == null) {
             return "UNKNOWN";
         }
-        // Handle numeric sentiment from Sentiment140 dataset style (0=Negative,
-        // 4=Positive)
-        // Also keep support for explicit strings if sent by other producers
         String normalized = rawSentiment.trim();
         return switch (normalized) {
-            case "4", "4.0" -> "POSITIVE";
-            case "0", "0.0" -> "NEGATIVE";
-            case "2", "2.0" -> "NEUTRAL";
-            // Handle text-based labels from Twitter Training dataset
             case "Positive", "positive" -> "POSITIVE";
             case "Negative", "negative" -> "NEGATIVE";
             case "Neutral", "neutral" -> "NEUTRAL";

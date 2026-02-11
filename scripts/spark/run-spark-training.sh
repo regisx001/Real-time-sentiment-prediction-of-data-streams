@@ -24,7 +24,8 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Go up two levels: scripts/spark -> scripts -> project_root
 PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
-DATA_FILE="$PROJECT_ROOT/data/cleaned.csv"
+DATA_FILE="$PROJECT_ROOT/data/twitter/twitter_training.csv"
+VAL_FILE="$PROJECT_ROOT/data/twitter/twitter_validation.csv"
 SCRIPT_FILE="$PROJECT_ROOT/spark/training/train_sentiment_spark.py"
 
 echo "=== Spark Sentiment Model Training ==="
@@ -66,9 +67,17 @@ if [ ! -f "$DATA_FILE" ]; then
     exit 1
 fi
 
-sudo docker cp "$DATA_FILE" spark-master:/opt/spark/work-dir/cleaned.csv
-sudo docker cp "$DATA_FILE" spark-worker:/opt/spark/work-dir/cleaned.csv
-echo "✓ Dataset copied to Master and Worker work-dir"
+sudo docker cp "$DATA_FILE" spark-master:/opt/spark/work-dir/twitter_training.csv
+sudo docker cp "$DATA_FILE" spark-worker:/opt/spark/work-dir/twitter_training.csv
+echo "✓ Training Dataset copied"
+
+if [ ! -f "$VAL_FILE" ]; then
+    echo "ERROR: Validation Dataset not found at $VAL_FILE"
+    exit 1
+fi
+sudo docker cp "$VAL_FILE" spark-master:/opt/spark/work-dir/twitter_validation.csv
+sudo docker cp "$VAL_FILE" spark-worker:/opt/spark/work-dir/twitter_validation.csv
+echo "✓ Validation Dataset copied"
 echo ""
 
 # Step 3: Copy training script

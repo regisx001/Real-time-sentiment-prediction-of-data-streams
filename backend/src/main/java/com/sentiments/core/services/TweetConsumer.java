@@ -46,11 +46,17 @@ public class TweetConsumer {
         // Handle numeric sentiment from Sentiment140 dataset style (0=Negative,
         // 4=Positive)
         // Also keep support for explicit strings if sent by other producers
-        return switch (rawSentiment.trim()) {
+        String normalized = rawSentiment.trim();
+        return switch (normalized) {
             case "4", "4.0" -> "POSITIVE";
             case "0", "0.0" -> "NEGATIVE";
             case "2", "2.0" -> "NEUTRAL";
-            default -> rawSentiment;
+            // Handle text-based labels from Twitter Training dataset
+            case "Positive", "positive" -> "POSITIVE";
+            case "Negative", "negative" -> "NEGATIVE";
+            case "Neutral", "neutral" -> "NEUTRAL";
+            case "Irrelevant", "irrelevant" -> "NEUTRAL"; // Just in case model hasn't been retrained yet
+            default -> normalized.toUpperCase();
         };
     }
 }

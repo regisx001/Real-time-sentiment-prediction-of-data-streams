@@ -2,7 +2,7 @@ from pyspark.ml.functions import vector_to_array
 from pyspark.sql.functions import expr
 from pyspark.ml import PipelineModel
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, to_json, struct, udf
+from pyspark.sql.functions import col, from_json, to_json, struct, udf, lower, regexp_replace
 from pyspark.sql.types import StructType, StructField, StringType, LongType, DoubleType
 import random
 
@@ -26,7 +26,7 @@ print("✓ Model loaded successfully")
 
 
 print("=" * 60)
-print("Spark Streaming with RANDOM Sentiment (Mock)")
+print("Spark Streaming with TRAINED Sentiment Model")
 print("=" * 60)
 
 # 2. Read from Kafka as a STREAM
@@ -62,6 +62,16 @@ parsed_df = messages.select(
 
 parsed_df = parsed_df.withColumnRenamed("text", "cleaned_text")
 
+# Apply cleaning steps matching training pipeline
+parsed_df = parsed_df.withColumn("cleaned_text", lower(col("cleaned_text")))
+parsed_df = parsed_df.withColumn(
+    "cleaned_text", regexp_replace(col("cleaned_text"), r"http\S+", ""))
+parsed_df = parsed_df.withColumn(
+    "cleaned_text", regexp_replace(col("cleaned_text"), r"@\w+", ""))
+parsed_df = parsed_df.withColumn("cleaned_text", regexp_replace(
+    col("cleaned_text"), r"[^a-zA-Z\s]", ""))
+parsed_df = parsed_df.withColumn(
+    "cleaned_text", regexp_replace(col("cleaned_text"), r"\s+", " "))
 
 predictions = model.transform(parsed_df)
 
@@ -76,29 +86,6 @@ processed_df = predictions.select(
     col("predicted_label").alias("sentiment"),
     col("prob_array")[col("prediction").cast("int")].alias("score")
 )
-
-
-# 4. Generate RANDOM sentiment
-
-
-# def random_sentiment():
-#     """Randomly return POSITIVE or NEGATIVE"""
-#     return random.choice(["POSITIVE", "NEGATIVE"])
-
-
-# def random_score():
-#     """Random confidence score between 0.7 and 0.99"""
-#     return round(random.uniform(0.7, 0.99), 2)
-
-
-# # Register UDFs
-# sentiment_udf = udf(lambda x: random_sentiment(), StringType())
-# score_udf = udf(lambda x: random_score(), DoubleType())
-
-# # Apply random sentiment
-# processed_df = parsed_df.withColumn("sentiment", sentiment_udf(col("tweetId")))
-# processed_df = processed_df.withColumn("score", score_udf(col("tweetId")))
-
 
 # Select output columns
 output_df = processed_df.select(

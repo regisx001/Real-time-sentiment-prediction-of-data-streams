@@ -22,7 +22,7 @@ public class TweetConsumer {
         this.tweetRepository = tweetRepository;
     }
 
-    @KafkaListener(topics = "processed-tweets", groupId = "core-consumer")
+    @KafkaListener(topics = "tweets.processed", groupId = "core-consumer")
     @Transactional
     public void consume(ProcessedTweetEvent event) {
         log.info("Consumed processed tweet: " + event);

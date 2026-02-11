@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TweetProducer {
 
     private final KafkaTemplate<String, TweetEvent> kafkaTemplate;
-    private static final String TOPIC = "tweets";
+    private static final String TOPIC = "tweets.raw";
 
     public TweetProducer(KafkaTemplate<String, TweetEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;

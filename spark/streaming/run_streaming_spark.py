@@ -32,16 +32,17 @@ print("=" * 60)
 # 2. Read from Kafka as a STREAM
 kafka_server = "broker:9092"
 print(f"✓ Connecting to Kafka at: {kafka_server}")
-print(f"✓ Reading from topic: tweets")
-print(f"✓ Writing to topic: processed-tweets")
+print(f"✓ Reading from topic: tweets.raw")
+print(f"✓ Writing to topic: tweets.processed")
 print("=" * 60)
 
 kafka_df = (
     spark.readStream
     .format("kafka")
     .option("kafka.bootstrap.servers", kafka_server)
-    .option("subscribe", "tweets")
+    .option("subscribe", "tweets.raw")
     .option("startingOffsets", "latest")
+    .option("failOnDataLoss", "false")
     .load()
 )
 
@@ -104,7 +105,7 @@ query = (
     kafka_output.writeStream
     .format("kafka")
     .option("kafka.bootstrap.servers", kafka_server)
-    .option("topic", "processed-tweets")
+    .option("topic", "tweets.processed")
     .option("checkpointLocation", "/tmp/spark_checkpoint_tweets_mock")
     .outputMode("append")
     .start()

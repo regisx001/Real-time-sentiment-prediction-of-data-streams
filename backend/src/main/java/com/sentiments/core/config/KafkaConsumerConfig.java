@@ -12,8 +12,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import com.sentiments.core.domain.dto.TweetEvent;
-
 import java.util.HashMap;
 import java.util.Map;
 

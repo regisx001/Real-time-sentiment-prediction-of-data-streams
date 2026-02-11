@@ -1,1 +1,2 @@
 https://www.kaggle.com/datasets/kazanova/sentiment140?utm_source=chatgpt.com
+https://www.kaggle.com/datasets/jp797498e/twitter-entity-sentiment-analysis

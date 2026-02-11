@@ -10,6 +10,7 @@ from pyspark.ml.feature import (
 from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 import os
+from pyspark.ml.feature import IndexToString
 
 
 def main():
@@ -92,13 +93,23 @@ def main():
     )
 
     # 6. Pipeline Construction
+    # Fit label indexer separately to get labels
+    label_model = label_indexer.fit(df)
+    df = label_model.transform(df)
+
+    label_converter = IndexToString(
+        inputCol="prediction",
+        outputCol="predicted_label",
+        labels=label_model.labels
+    )
+
     pipeline = Pipeline(stages=[
-        label_indexer,
         tokenizer,
         remover,
         vectorizer,
         idf,
-        lr
+        lr,
+        label_converter
     ])
 
     # 7. Train / Test Split

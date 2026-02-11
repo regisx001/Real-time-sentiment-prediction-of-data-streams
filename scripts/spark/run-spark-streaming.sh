@@ -2,12 +2,17 @@
 set -e
 
 DETACHED=false
+INSTALL_DEPS=true
 
 # -------- Parse flags --------
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     -d|--detached)
       DETACHED=true
+      shift
+      ;;
+    -nd|--no-dependancy)
+      INSTALL_DEPS=false
       shift
       ;;
     *)
@@ -46,12 +51,17 @@ if ! sudo docker ps | grep -q spark-master; then
 fi
 echo "✓ Spark containers are running"
 
-# -------- Install numpy --------
-# echo ""
-# echo "Installing numpy on Spark Master and Worker..."
-# sudo docker exec spark-master pip install numpy --quiet 2>/dev/null || true
-# sudo docker exec spark-worker pip install numpy --quiet 2>/dev/null || true
-# echo "✓ numpy installed"
+# -------- Install dependencies --------
+if [ "$INSTALL_DEPS" = true ]; then
+  echo ""
+  echo "Installing numpy and pandas on Spark Master and Worker..."
+  sudo docker exec --user root spark-master pip install numpy pandas --quiet 2>/dev/null || true
+  sudo docker exec --user root spark-worker pip install numpy pandas --quiet 2>/dev/null || true
+  echo "✓ dependencies installed"
+else
+  echo ""
+  echo "Skipping dependency installation (--no-dependancy flag used)"
+fi
 
 # -------- Copy streaming script --------
 echo ""

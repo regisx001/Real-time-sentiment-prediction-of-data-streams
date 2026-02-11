@@ -5,6 +5,22 @@
 
 set -e
 
+INSTALL_DEPS=true
+
+# -------- Parse flags --------
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    -nd|--no-dependancy)
+      INSTALL_DEPS=false
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Go up two levels: scripts/spark -> scripts -> project_root
 PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
@@ -33,10 +49,14 @@ echo "✓ Spark containers are running"
 echo ""
 
 # Step 1: Install numpy on Master and Worker
-echo "Step 1: Installing numpy on Spark Master and Worker..."
-sudo docker exec spark-master pip install numpy --quiet 2>/dev/null || true
-sudo docker exec spark-worker pip install numpy --quiet 2>/dev/null || true
-echo "✓ numpy installed"
+if [ "$INSTALL_DEPS" = true ]; then
+    echo "Step 1: Installing numpy on Spark Master and Worker..."
+    sudo docker exec spark-master pip install numpy --quiet 2>/dev/null || true
+    sudo docker exec spark-worker pip install numpy --quiet 2>/dev/null || true
+    echo "✓ numpy installed"
+else
+    echo "Step 1: Skipping numpy installation..."
+fi
 echo ""
 
 # Step 2: Copy data to Master and Worker (writable work-dir)
@@ -67,10 +87,10 @@ echo "================================================================"
 echo ""
 
 # Step 5: Copy model back to host
-echo "Step 5: Copying trained model back to host..."
-mkdir -p "$PROJECT_ROOT/ml"
-sudo docker cp spark-master:/opt/spark/work-dir/spark_sentiment_model "$PROJECT_ROOT/ml/" 2>/dev/null || true
-echo "✓ Model saved to $PROJECT_ROOT/ml/spark_sentiment_model"
-echo ""
+# echo "Step 5: Copying trained model back to host..."
+# mkdir -p "$PROJECT_ROOT/ml"
+# sudo docker cp spark-master:/opt/spark/work-dir/spark_sentiment_model "$PROJECT_ROOT/ml/" 2>/dev/null || true
+# echo "✓ Model saved to $PROJECT_ROOT/ml/spark_sentiment_model"
+# echo ""
 
 echo "=== Training Complete ==="

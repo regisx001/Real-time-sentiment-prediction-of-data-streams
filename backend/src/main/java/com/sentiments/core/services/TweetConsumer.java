@@ -28,7 +28,7 @@ public class TweetConsumer {
             Optional<Tweet> tweetOpt = tweetRepository.findById(id);
             if (tweetOpt.isPresent()) {
                 Tweet tweet = tweetOpt.get();
-                tweet.setSentiment(event.sentiment());
+                tweet.setSentiment(mapSentiment(event.sentiment()));
                 tweetRepository.save(tweet);
             } else {
                 System.err.println("Tweet not found with ID: " + id);
@@ -36,5 +36,20 @@ public class TweetConsumer {
         } catch (NumberFormatException e) {
             System.err.println("Invalid tweet ID format: " + event.tweetId());
         }
+    }
+
+    private String mapSentiment(String rawSentiment) {
+        if (rawSentiment == null) {
+            return "UNKNOWN";
+        }
+        // Handle numeric sentiment from Sentiment140 dataset style (0=Negative,
+        // 4=Positive)
+        // Also keep support for explicit strings if sent by other producers
+        return switch (rawSentiment.trim()) {
+            case "4", "4.0" -> "POSITIVE";
+            case "0", "0.0" -> "NEGATIVE";
+            case "2", "2.0" -> "NEUTRAL";
+            default -> rawSentiment;
+        };
     }
 }

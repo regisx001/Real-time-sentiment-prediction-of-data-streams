@@ -1,10 +1,20 @@
 package com.sentiments.core.domain.entities;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "raw_tweets")
+@Setter
+@Getter
 public class Tweet {
 
     @Id
@@ -20,10 +30,14 @@ public class Tweet {
     @Column(name = "sentiment")
     private String sentiment;
 
+    @Column(name = "score")
+    private double score;
+
     @Column(name = "ingested_at", nullable = false)
     private LocalDateTime ingestedAt;
 
-    public Tweet() {}
+    public Tweet() {
+    }
 
     public Tweet(String text, String source) {
         this.text = text;
@@ -31,18 +45,4 @@ public class Tweet {
         this.ingestedAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
-
-    public String getSource() { return source; }
-    public void setSource(String source) { this.source = source; }
-
-    public String getSentiment() { return sentiment; }
-    public void setSentiment(String sentiment) { this.sentiment = sentiment; }
-
-    public LocalDateTime getIngestedAt() { return ingestedAt; }
-    public void setIngestedAt(LocalDateTime ingestedAt) { this.ingestedAt = ingestedAt; }
 }

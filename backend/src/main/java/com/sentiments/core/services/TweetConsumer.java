@@ -29,6 +29,7 @@ public class TweetConsumer {
             if (tweetOpt.isPresent()) {
                 Tweet tweet = tweetOpt.get();
                 tweet.setSentiment(mapSentiment(event.sentiment()));
+                tweet.setScore(event.score());
                 tweetRepository.save(tweet);
             } else {
                 System.err.println("Tweet not found with ID: " + id);

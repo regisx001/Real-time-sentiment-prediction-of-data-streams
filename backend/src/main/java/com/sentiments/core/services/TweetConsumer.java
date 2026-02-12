@@ -1,5 +1,7 @@
 package com.sentiments.core.services;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.kafka.annotation.KafkaListener;
@@ -7,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sentiments.core.domain.dto.ProcessedTweetEvent;
-import com.sentiments.core.domain.entities.RawTweet;
-import com.sentiments.core.repository.RawTweetRepository;
+import com.sentiments.core.domain.entities.Tweet;
+import com.sentiments.core.repository.TweetRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class TweetConsumer {
 
-    private final RawTweetRepository rawTweetRepository;
+    private final TweetRepository TweetRepository;
 
     @KafkaListener(topics = "tweets.processed", groupId = "core-consumer")
     @Transactional
@@ -26,12 +28,20 @@ public class TweetConsumer {
         log.info("Consumed processed tweet: " + event);
         try {
             Long id = Long.valueOf(event.tweetId());
-            Optional<RawTweet> tweetOpt = rawTweetRepository.findById(id);
+            Optional<Tweet> tweetOpt = TweetRepository.findById(id);
             if (tweetOpt.isPresent()) {
-                RawTweet tweet = tweetOpt.get();
-                tweet.setSentiment(mapSentiment(event.sentiment()));
-                tweet.setScore(event.score());
-                rawTweetRepository.save(tweet);
+                Tweet tweet = tweetOpt.get();
+
+                Map<String, Object> processedData = tweet.getProcessedData();
+                if (processedData == null) {
+                    processedData = new HashMap<>();
+                }
+
+                processedData.put("sentiment", mapSentiment(event.sentiment()));
+                processedData.put("score", event.score());
+                tweet.setProcessedData(processedData);
+
+                TweetRepository.save(tweet);
             } else {
                 log.error("Tweet not found with ID: " + id);
             }

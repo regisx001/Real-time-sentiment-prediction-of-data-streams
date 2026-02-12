@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sentiments.core.domain.entities.RawTweet;
+import com.sentiments.core.domain.entities.Tweet;
 import com.sentiments.core.services.TweetService;
 
 @RestController
@@ -24,18 +24,18 @@ public class TweetController {
     }
 
     @PostMapping
-    public ResponseEntity<RawTweet> createTweet(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<Tweet> createTweet(@RequestBody Map<String, String> payload) {
         String text = payload.get("text");
         String source = payload.getOrDefault("source", "api");
         if (text == null || text.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        RawTweet created = tweetService.createTweet(text, source);
+        Tweet created = tweetService.createTweet(text, source);
         return ResponseEntity.ok(created);
     }
 
     @GetMapping
-    public ResponseEntity<List<RawTweet>> listTweets() {
+    public ResponseEntity<List<Tweet>> listTweets() {
         return ResponseEntity.ok(tweetService.getAllTweets());
     }
 }

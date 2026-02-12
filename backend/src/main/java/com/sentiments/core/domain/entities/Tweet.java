@@ -1,6 +1,7 @@
 package com.sentiments.core.domain.entities;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,41 +9,36 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import org.hibernate.annotations.Type;
+
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 
 @Entity
 @Table(name = "raw_tweets")
 @Setter
 @Getter
-public class RawTweet {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Tweet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tweet_text", nullable = false)
-    private String text;
+    @Type(JsonBinaryType.class)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> rawData;
 
-    @Column(name = "source")
-    private String source;
-
-    @Column(name = "sentiment")
-    private String sentiment;
-
-    @Column(name = "score")
-    private double score;
+    @Type(JsonBinaryType.class)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> processedData;
 
     @Column(name = "ingested_at", nullable = false)
     private LocalDateTime ingestedAt;
-
-    public RawTweet() {
-    }
-
-    public RawTweet(String text, String source) {
-        this.text = text;
-        this.source = source;
-        this.ingestedAt = LocalDateTime.now();
-    }
 
 }

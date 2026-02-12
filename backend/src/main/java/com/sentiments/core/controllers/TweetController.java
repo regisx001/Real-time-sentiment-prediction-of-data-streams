@@ -1,12 +1,17 @@
 package com.sentiments.core.controllers;
 
-import com.sentiments.core.domain.entities.Tweet;
-import com.sentiments.core.services.TweetService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.sentiments.core.domain.entities.RawTweet;
+import com.sentiments.core.services.TweetService;
 
 @RestController
 @RequestMapping("/api/tweets")
@@ -19,18 +24,18 @@ public class TweetController {
     }
 
     @PostMapping
-    public ResponseEntity<Tweet> createTweet(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<RawTweet> createTweet(@RequestBody Map<String, String> payload) {
         String text = payload.get("text");
         String source = payload.getOrDefault("source", "api");
         if (text == null || text.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
-        Tweet created = tweetService.createTweet(text, source);
+        RawTweet created = tweetService.createTweet(text, source);
         return ResponseEntity.ok(created);
     }
 
     @GetMapping
-    public ResponseEntity<List<Tweet>> listTweets() {
+    public ResponseEntity<List<RawTweet>> listTweets() {
         return ResponseEntity.ok(tweetService.getAllTweets());
     }
 }

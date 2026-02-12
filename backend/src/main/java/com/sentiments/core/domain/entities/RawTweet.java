@@ -15,7 +15,7 @@ import lombok.Setter;
 @Table(name = "raw_tweets")
 @Setter
 @Getter
-public class Tweet {
+public class RawTweet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +36,10 @@ public class Tweet {
     @Column(name = "ingested_at", nullable = false)
     private LocalDateTime ingestedAt;
 
-    public Tweet() {
+    public RawTweet() {
     }
 
-    public Tweet(String text, String source) {
+    public RawTweet(String text, String source) {
         this.text = text;
         this.source = source;
         this.ingestedAt = LocalDateTime.now();

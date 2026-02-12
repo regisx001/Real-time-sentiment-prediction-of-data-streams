@@ -7,20 +7,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sentiments.core.domain.dto.ProcessedTweetEvent;
-import com.sentiments.core.domain.entities.Tweet;
-import com.sentiments.core.repository.TweetRepository;
+import com.sentiments.core.domain.entities.RawTweet;
+import com.sentiments.core.repository.RawTweetRepository;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TweetConsumer {
 
-    private final TweetRepository tweetRepository;
-
-    public TweetConsumer(TweetRepository tweetRepository) {
-        this.tweetRepository = tweetRepository;
-    }
+    private final RawTweetRepository rawTweetRepository;
 
     @KafkaListener(topics = "tweets.processed", groupId = "core-consumer")
     @Transactional
@@ -28,12 +26,12 @@ public class TweetConsumer {
         log.info("Consumed processed tweet: " + event);
         try {
             Long id = Long.valueOf(event.tweetId());
-            Optional<Tweet> tweetOpt = tweetRepository.findById(id);
+            Optional<RawTweet> tweetOpt = rawTweetRepository.findById(id);
             if (tweetOpt.isPresent()) {
-                Tweet tweet = tweetOpt.get();
+                RawTweet tweet = tweetOpt.get();
                 tweet.setSentiment(mapSentiment(event.sentiment()));
                 tweet.setScore(event.score());
-                tweetRepository.save(tweet);
+                rawTweetRepository.save(tweet);
             } else {
                 log.error("Tweet not found with ID: " + id);
             }

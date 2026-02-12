@@ -1,9 +1,10 @@
 package com.sentiments.core.repository;
 
-import com.sentiments.core.domain.entities.Tweet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.sentiments.core.domain.entities.RawTweet;
+
 @Repository
-public interface TweetRepository extends JpaRepository<Tweet, Long> {
+public interface RawTweetRepository extends JpaRepository<RawTweet, Long> {
 }
